@@ -19,7 +19,7 @@ class ItemsController {
     
         })
     
-        res.json(serializedItems)
+        return res.json(serializedItems)
     
     }
 
