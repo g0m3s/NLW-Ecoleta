@@ -1,0 +1,136 @@
+
+  .changeLabel{
+    cursor: pointer;
+  }
+  
+  body {
+  
+    transition: .8s linear;
+  
+  }
+  
+  body.dark {
+  
+    background-color: #696969;
+    
+  }
+  
+  body.dark #page-create-point form {
+  
+    background-color: #2b2b2b;
+    color: white;
+  
+  }
+  
+  body.dark #page-create-point form h1,h2,span,p {
+  
+    color: rgb(202, 202, 202);
+  
+  }
+  
+  #iconChangeTheme {
+  
+    height: 25px;
+    animation: flutua 13s infinite;
+    transition: .5s all;
+  
+  }
+  
+  #cloud1{
+  
+    height: 15px;
+    animation: cloud1 15s infinite;
+    transition: .5s all;
+  
+  }
+  
+  #cloud2{
+  
+    height: 15px;
+    animation: cloud2 15s infinite;
+    transition: .5s all;
+  
+  }
+  
+  @keyframes cloud1 {
+  
+    0%{
+  
+      transform: TranslateX(-5px) 
+      
+    }
+    25%{
+  
+      transform: TranslateX(0px)
+      
+    }
+    50%{
+  
+      transform: TranslateX(5px)
+      
+    }
+    75%{
+  
+      transform: TranslateX(0px)
+      
+    }
+    100%{
+  
+      transform: TranslateX(-5px)
+      
+    }
+  
+  
+  }
+  
+  @keyframes cloud2 {
+  
+    0%{
+  
+      transform: TranslateX(5px) 
+      
+    }
+    25%{
+  
+      transform: TranslateX(0px)
+      
+    }
+    50%{
+  
+      transform: TranslateX(-5px)
+      
+    }
+    75%{
+  
+      transform: TranslateX(0px)
+      
+    }
+    100%{
+  
+      transform: TranslateX(5px)
+      
+    }
+  
+  
+  }
+  
+  @keyframes flutua {
+  
+    0%{
+  
+      transform: TranslateY(-10px) translateX(30px)
+      
+    }
+    50%{
+  
+      transform: TranslateY(-20px) translateX(30px)
+      
+    }
+    100%{
+  
+      transform: TranslateY(-10px) translateX(30px)
+      
+    }
+  
+  
+  }

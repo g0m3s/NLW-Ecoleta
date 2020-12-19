@@ -1,11 +1,14 @@
 import React, {useEffect, useState, ChangeEvent, useRef, useMemo, useCallback, FormEvent} from 'react'
 import logo from '../../assets/logo.svg'
 import { Link, useHistory } from 'react-router-dom'
-import { FiArrowLeft } from 'react-icons/fi'
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import api from '../../services/api'
 import axios from 'axios'
+import moon from '../../assets/moon.png'
+import cloud from '../../assets/cloud.webp'
+import sun from '../../assets/sun.webp'
 import './style.css'
+import './dark.css'
 
 interface Item {
     id: number,
@@ -191,21 +194,36 @@ const CreatePoint = () => {
         history.push('/')
     }
 
+    function darkMode() {
+
+        document.body.classList.toggle('dark')
+
+        var icon = document.getElementById('iconChangeTheme')
+
+        if (document.body.classList.value != "dark")
+            icon?.setAttribute('src', sun)
+        else
+            icon?.setAttribute('src', moon)
+        
+    }
+
     return (
 
         <div id="page-create-point">
 
             <header>
 
-                <img src={logo} alt="Ecoleta"/>
-
                 <Link to='/' >
 
-                    <FiArrowLeft/>
-
-                    Voltar para home
+                    <img src={logo} alt="Ecoleta"/>
 
                 </Link>
+
+                <a className="changeLabel" onClick={darkMode}>
+                    <img src={sun} alt="sol" id="iconChangeTheme" />
+                    <img src={cloud} alt="nuvem" id="cloud1" />
+                    <img src={cloud} alt="nuvem" id="cloud2" />
+                </a>
 
             </header>
 
