@@ -1,19 +1,31 @@
-import React, {useEffect, useState, ChangeEvent, useRef, useMemo, useCallback, FormEvent} from 'react'
-import logo from '../../assets/logo.svg'
+import React, {FormEvent, ChangeEvent, useState, useEffect} from 'react'
 import { Link, useHistory } from 'react-router-dom'
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
+import logo from '../../assets/logo.svg'
 import api from '../../services/api'
 import axios from 'axios'
 import moon from '../../assets/moon.png'
 import cloud from '../../assets/cloud.webp'
 import sun from '../../assets/sun.png'
+import market from '../../assets/market.png'
 import './style.css'
-import './dark.css'
+import '../createPoint/dark.css'
 
 interface Item {
     id: number,
     name: string,
     imageUrl: string
+}
+
+interface Entity {
+    id: number,
+    name: string,
+    image: string,
+    city: string,
+    email: string,
+    latitude: number,
+    longitude: number,
+    uf: string,
+    whatsapp: string
 }
 
 interface IbgeUFResponse {
@@ -24,32 +36,17 @@ interface IbgeCityResponse {
     nome: string
 }
 
-const CreatePoint = () => {
+const FindPoint = () => {
 
+    const history = useHistory()
     const [items,setItems] = useState<Item[]>([])
+    const [entitys,setEntity] = useState<Entity[]>([])
     const [ufs,setUfs] = useState<string[]>([])
     const [sectedUf, setSectedUf] = useState('')
     const [sectedCity, setSectedCity] = useState('')
     const [cities, setCities] = useState<string[]>([])
-    const [formData, setFormData] = useState({
-
-        name: '',
-        email: '',
-        whatsapp: ''
-
-    })
+    const [result, setResult] = useState({display: "none"})
     const [selectedsItems, setSelectedsItems] = useState<number[]>([])
-    const markerRef = useRef<any>(null)
-
-    const center = {
-        lat: -21.6956928,
-        lng: -41.3073408,
-    }
-
-    const [draggable, setDraggable] = useState(false)
-    const [position, setPosition] = useState(center)
-
-    const history = useHistory()
 
     useEffect(() => {
 
@@ -59,7 +56,6 @@ const CreatePoint = () => {
         })
         
     }, [])
-
     useEffect(() => {
 
         axios.get<IbgeUFResponse[]>('https://servicodados.ibge.gov.br/api/v1/localidades/estados')
@@ -71,7 +67,6 @@ const CreatePoint = () => {
         })
         
     }, [])
-
     useEffect(() => {
 
         if (sectedUf != '') {
@@ -88,41 +83,18 @@ const CreatePoint = () => {
         
     }, [sectedUf])
 
-    function DraggableMarker() {
+    async function handleSubmit(event:FormEvent ) {
 
-        const eventHandlers = useMemo(
-          () => ({
-            dragend() {
-              const marker = markerRef.current
-              if (marker != null) {
-                setPosition(marker.getLatLng())
-                console.log(position)
-              }
-            },
-          }),
-          [],
-        )
-        const toggleDraggable = useCallback(() => {
-          setDraggable((d) => !d)
-        }, [])
-      
-        return (
-          <Marker
-            draggable={draggable}
-            eventHandlers={eventHandlers}
-            position={position}
-            ref={markerRef}>
-            <Popup minWidth={90}>
-              <span onClick={toggleDraggable}>
-                {draggable
-                  ? 'Escolha o local'
-                  : 'Clique aqui para mudar a localização'}
-              </span>
-            </Popup>
-          </Marker>
-        )
+        event.preventDefault()
+
+        const data = await api.get(`/points?city=${sectedCity}&uf=${sectedUf}&items=${selectedsItems}`)
+
+        setResult({display: "block"})
+
+        setEntity(data.data)
+
+        // history.push('/')
     }
-
     function handleSelectedUf(event:ChangeEvent<HTMLSelectElement>) {
 
         const uf = event.target.value
@@ -137,18 +109,6 @@ const CreatePoint = () => {
         setSectedCity(city)
 
     }
-
-    function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
-
-        const {name, value} = event.target
-        setFormData({
-
-            ...formData, [name]: value
-
-        })
-        
-    }
-
     function handleSelectItem(id:number) {
 
         const alReadySelected = selectedsItems?.findIndex( item => item === id)
@@ -162,38 +122,6 @@ const CreatePoint = () => {
             setSelectedsItems( [...selectedsItems, id])
         
     }
-
-    async function handleSubmit(event:FormEvent ) {
-
-        event.preventDefault()
-
-        const {name, email, whatsapp} = formData
-        const uf = sectedUf
-        const city = sectedCity
-        const latitude = position.lat
-        const longitude = position.lng
-        const items = selectedsItems
-
-        const data = {
-
-            name,
-            email,
-            whatsapp,
-            uf,
-            city,
-            latitude,
-            longitude,
-            items
-
-        }
-        
-        await api.post('/points', data)
-
-        alert('Ponto de coleta cadastrado com sucesso!')
-
-        history.push('/')
-    }
-
     function darkMode() {
 
         document.body.classList.toggle('dark')
@@ -227,72 +155,11 @@ const CreatePoint = () => {
 
             </header>
 
-            <form onSubmit={handleSubmit} >
+            <main>
 
-                <h1>Cadastro do <br/> ponto de Coleta</h1>
+                <form onSubmit={handleSubmit}>
 
-                <fieldset>
-
-                    <legend>
-                        <h2>Dados</h2>
-                    </legend>
-
-                    <div className="field" >
-
-                        <label htmlFor="name"> Nome da entidade </label>
-                        <input
-                            type="text"
-                            name="name"
-                            id="name"
-                            onChange={handleInputChange}
-                        />
-
-                    </div>
-
-                    <div className="field-group" >
-
-                        <div className="field" >
-
-                            <label htmlFor="email"> E-mail </label>
-                            <input
-                                type="text"
-                                name="email"
-                                id="email"
-                                onChange={handleInputChange}
-                            />
-
-                        </div>
-
-                        <div className="field" >
-
-                            <label htmlFor="whatsapp"> Whatsapp </label>
-                            <input
-                                type="text"
-                                name="whatsapp"
-                                id="whatsapp"
-                                onChange={handleInputChange}
-                            />
-
-                        </div>
-
-                    </div>
-
-                </fieldset>
-
-                <fieldset>
-
-                    <legend>
-                        <h2>Endereço</h2>
-                        <span>Selecione o endereço no mapa</span>
-                    </legend>
-
-                    <MapContainer center={center} zoom={13} scrollWheelZoom={false}>
-                        <TileLayer
-                        attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                        />
-                        <DraggableMarker />
-                    </MapContainer>
+                    <h2>Selecione o endereço para pesquisa</h2>
 
                     <div className="field-group">
 
@@ -334,9 +201,7 @@ const CreatePoint = () => {
 
                     </div>
 
-                </fieldset>
-
-                <fieldset>
+                    <fieldset>
 
                     <legend>
                         <h2>Ítens de coleta</h2>
@@ -360,9 +225,44 @@ const CreatePoint = () => {
 
                 </fieldset>
 
-                <button type="submit"> Cadastrar ponto de coleta </button>
+                    <button type="submit"> Procurar por ponto de Coleta </button>
 
-            </form>
+                    <div style={result} className="result">
+                        
+                        <h2>Resultados da busca:</h2>
+
+                    </div>
+
+
+                    <section>
+
+                        {entitys.map( item => (
+
+                            <div className="entity">
+
+                                <h3>{item.name}</h3>
+
+                                <img src={market} alt=""/>
+                                {/* <img src={item.image} alt=""/> */}
+
+                                <div className="contact">
+
+                                    <h4>Contato:</h4>
+
+                                    <p>{item.email}</p>
+                                    <p>{item.whatsapp}</p>
+
+                                </div>
+
+                            </div>
+
+                        ))}
+
+                    </section>
+
+                </form>
+
+            </main>
 
         </div>
 
@@ -370,4 +270,4 @@ const CreatePoint = () => {
 
 }
 
-export default CreatePoint
+export default FindPoint

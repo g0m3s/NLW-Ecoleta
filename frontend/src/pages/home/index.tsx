@@ -1,10 +1,13 @@
 import React from 'react'
 import { FiLogIn } from 'react-icons/fi'
-import './style.css'
 import logo from '../../assets/logo.svg'
 import { Link } from 'react-router-dom'
+import './style.css'
+
 
 const Home = () => {
+
+    const find = { background: "#322153"}
 
     return (
 
@@ -21,6 +24,16 @@ const Home = () => {
                     <h1>Seu marketplace de coleta de resíduos.</h1>
 
                     <p>Ajudamos pessoas a encontrarem pontos de coleta de forma eficiente.</p>
+
+                    <Link to="/find-point" style={find}>
+
+                        <span>
+                            <FiLogIn />
+                        </span>
+
+                        <strong>Encontre um ponto de coleta</strong>
+
+                    </Link>
 
                     <Link to="/create-point">
 

@@ -27,6 +27,11 @@
     color: rgb(202, 202, 202);
   
   }
+  body.dark h2 {
+
+    color: rgb(202, 202, 202);
+
+  }
   
   #iconChangeTheme {
   
